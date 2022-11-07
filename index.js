@@ -13,6 +13,19 @@ app.get("/tweets", (req, res) => {
     res.send(tweets.slice(-10).reverse())
 })
 
+app.get("/tweets/:USERNAME", (req, res) => {
+
+    const username = req.params.USERNAME
+
+    let tweetsFiltrados = tweets.filter( i => i.username === username )
+
+    if(tweetsFiltrados.length !== 0){
+        res.send(tweetsFiltrados.reverse())
+    }else{
+        res.sendStatus(400)
+    }
+})
+
 app.post("/tweets", (req, res) => {
 
     const tweet = req.body
