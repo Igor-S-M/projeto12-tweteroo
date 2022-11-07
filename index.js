@@ -10,7 +10,19 @@ const contas = []
 
 app.get("/tweets", (req, res) => {
 
-    res.send(tweets.slice(-10).reverse())
+    const {page} = req.query
+
+    if(page == 1){
+        res.send(tweets.slice(-10).reverse())
+        return
+    }else if(page > 1){
+        res.send(tweets.slice(-10 * page,-10 * (page -1)).reverse())
+        return
+    }else{
+        res.status(400).send("Informe uma página válida!")
+        return
+    }
+
 })
 
 app.get("/tweets/:USERNAME", (req, res) => {
@@ -28,12 +40,20 @@ app.get("/tweets/:USERNAME", (req, res) => {
 
 app.post("/tweets", (req, res) => {
 
-    const tweet = req.body
+    const {user} = req.headers
+    const avatar = contas.find(i=>i.username === user).avatar
 
-    if (!tweet.username || !tweet.tweet) {
+
+    if (!user|| !req.body.tweet) {
         res.status(400).send("Todos os campos são obrigatórios!") //BAD REQUEST
         return
     } else {
+
+        const tweet = {tweet : req.body.tweet,
+            avatar : avatar,
+            username: user
+        }
+
         tweets.push(tweet)
         res.status(201).send("OK")
     }
@@ -41,7 +61,7 @@ app.post("/tweets", (req, res) => {
 
 app.post("/sign-up", (req, res) => {
 
-    const conta = req.body
+    let conta = req.body
 
     if (!conta.username || !conta.avatar) {
         res.status(400).send("Todos os campos são obrigatórios!") //BAD REQUEST
